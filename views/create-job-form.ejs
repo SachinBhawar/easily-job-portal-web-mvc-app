@@ -1,0 +1,84 @@
+<!--  -->
+<% if(message){ %>
+<div class="registration">
+  <h1 class="fail"><%= message %></h1>
+</div>
+<% } %>
+<div class="postJob-form-container">
+  <!--  -->
+  <div class="title">Post a New Job</div>
+
+  <form action="/create-new-job" method="post">
+    <div class="user-details">
+      <div class="input-box-post-job">
+        <span class="details"> Company Name </span>
+        <input class="input" type="text" name="company" required />
+      </div>
+
+      <div class="input-box-post-job">
+        <span class="details"> Job Type Selection </span>
+        <select class="input" name="type" required>
+          <option selected disabled>select Job Type</option>
+          <option value="Tech">Tech</option>
+          <option value="Non-Tech">Non-Tech</option>
+        </select>
+      </div>
+
+      <div class="input-box-post-job">
+        <span class="details"> Designation </span>
+        <select class="input" name="designation" class="details" required>
+          <option selected disabled>select job designation</option>
+          <option value="HR">HR</option>
+          <option value="SDE">SDE</option>
+          <option value="DevOps">DevOps</option>
+          <option value="MERN Developer">MERN Developer</option>
+          <option value="Android Developer">Android Developer</option>
+          <option value="JAVA Developer">JAVA Developer</option>
+          <option value="Front-End Developer">Front-End Developer</option>
+          <option value="Back-End Developer">Back-End Developer</option>
+          <option value="Full-Stack Developer">Full-Stack Developer</option>
+        </select>
+      </div>
+
+      <div class="input-box-post-job">
+        <span class="details"> Salary </span>
+        <input class="input" type="text" name="salary" required />
+      </div>
+
+      <div class="input-box-post-job">
+        <span class="details"> Location </span>
+        <input class="input" type="text" name="location" required />
+      </div>
+
+      <div class="input-box-post-job">
+        <span class="details"> No Of vaccancies </span>
+        <input class="input" type="text" name="vacancies" required />
+      </div>
+
+      <div class="input-box-post-job">
+        <span class="details"> Experience Required </span>
+        <input class="input" type="text" name="experience" />
+      </div>
+
+      <div class="input-box-post-job">
+        <span class="details"> Skills required </span>
+        <input
+          class="input"
+          type="text"
+          placeholder="list skills saperated by comma"
+          name="skills"
+          required
+        />
+      </div>
+
+      <div class="desc-textarea">
+        <div class="details">Job Description</div>
+        <textarea class="input" type="text" name="description"></textarea>
+      </div>
+    </div>
+    <div>
+      <button class="submit-btn" type="submit">Post Job</button>
+    </div>
+  </form>
+</div>
+<!--  -->

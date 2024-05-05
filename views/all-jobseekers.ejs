@@ -1,0 +1,43 @@
+<!-- -->
+<% if(message){ %>
+<div class="registration">
+  <h1 class="fail"><%= message %></h1>
+</div>
+<% } %>
+
+<!-- job cards container -->
+<div id="cards-container">
+  <% allJobSeekers.forEach(jobSeeker => { %>
+  <div class="card">
+    <div class="actively-hiring">
+      <span><i class="fa-solid fa-user"></i>&#160; &#160;Applicant Details</span>
+    </div>
+    <div class="company"><%= jobSeeker.name %></div>
+    <div class="position">
+      <div class="location"><i class="fa-solid fa-user-graduate"></i> &#160; <%= jobSeeker.education %></div>
+      <div class="location"><i class="fa-solid fa-phone"></i> &#160; <%= jobSeeker.phone %></div>
+      <div class="location"><i class="fa-solid fa-envelope"></i> &#160; <%= jobSeeker.email %></div>
+    </div>
+    <div class="skills">
+      <% jobSeeker.skills.forEach(skill => { %>
+      <span class="skill cursor-pointer"><%= skill %></span>
+      <% }) %>
+    </div>
+    <div class="position">
+      Applied for:
+      <div class="location"><%= jobSeeker.company %></div>
+      <div class="location"><%= jobSeeker.designation %></div>
+    </div>
+    <div>
+      <a href="<%= jobSeeker.resume %>">
+        <button class="view-details-btn cursor-pointer">View Resume</button>
+      </a>
+    </div>
+    </div>
+    
+    <% }) %>
+    <div class="overlay hidden"></div>
+
+    <!-- -->
+  </div>
+</div>
