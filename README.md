@@ -38,9 +38,6 @@ Explore the source code on GitHub: [Job Portal GitHub Repository]([https://githu
 
 Contributions are welcome! If you have suggestions for improvements or new features, feel free to fork the repository and submit a pull request.
 
-## License 📄
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments 🙏
 
