@@ -53,23 +53,23 @@
       <div class="profile-details">
         <div class="profile-input-box">
           <span class="profile">Designation</span>
-          <input type="text" name="designation" value="<%= job.designation %>" disabled />
+          <input type="text" name="designation" style="background-color: white" value="<%= job.designation %>" disabled />
         </div>
         <div class="profile-input-box">
           <span class="profile">Job Type</span>
-          <input type="text" name="type" value="<%= job.type %>" disabled />
+          <input type="text" name="type" style="background-color: white" value="<%= job.type %>" disabled />
         </div>
         <div class="profile-input-box">
           <span class="profile">Salary</span>
-          <input type="text" name="salary" value="<%= job.salary %>" disabled />
+          <input type="text" name="salary" style="background-color: white" value="<%= job.salary %>" disabled />
         </div>
         <div class="profile-input-box">
           <span class="profile">Location</span>
-          <input type="text" name="location" value="<%= job.location %>" disabled />
+          <input type="text" name="location" style="background-color: white" value="<%= job.location %>" disabled />
         </div>
         <div class="profile-input-box">
           <span class="profile">No of Vacancies</span>
-          <input type="text" name="vacancies" value="<%= job.vacancies %>" disabled />
+          <input type="text" name="vacancies" style="background-color: white" value="<%= job.vacancies %>" disabled />
         </div>
 
         <%if(role =="recruiter" && userEmail == job.recruiter_email) {%>
