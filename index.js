@@ -1,16 +1,17 @@
 import express from "express";
 import path from "path";
-import RecuiterController from "./controllers/rec.cntrlr.new.js";
-import JobSeekerController from "./controllers/jobSeeker.cntrlr.new.js";
+import cookieParser from "cookie-parser";
 import ejsLayouts from "express-ejs-layouts";
+import session from "express-session";
+
 import { auth } from "./middlewares/auth.middleware.js";
 import { authRec } from "./middlewares/auth.recruiter.middleware.js";
 import validateRequest from "./middlewares/validation.middleware.js";
-import session from "express-session";
 import trackLastVisit from "./middlewares/trackLastVisit.middleware.js";
-import cookieParser from "cookie-parser";
 import validateJobDetails from "./middlewares/validate.jobdetails.middleware.js";
 import { uploadFile } from "./middlewares/file-upload.middleware.js";
+import RecuiterController from "./controllers/rec.cntrlr.new.js";
+import JobSeekerController from "./controllers/jobSeeker.cntrlr.new.js";
 //rest object
 const app = express();
 
@@ -28,12 +29,12 @@ app.use(express.json());
 
 // setting up express session
 app.use(
-  session({
-    secret: "SecretKey",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false },
-  })
+    session({
+        secret: "SecretKey",
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: false },
+    })
 );
 
 // Apply the trackLastVisit middleware to all routes
@@ -45,14 +46,15 @@ const Recruiter = new RecuiterController();
 const JobSeeker = new JobSeekerController();
 
 app.get("/", Recruiter.renderFrontPage);
+app.get("/home", Recruiter.renderHomePage);
 
 app.get("/recruiter-register", Recruiter.renderRegistrationPage);
 app.post("/recruiter-register", validateRequest, Recruiter.getRegistration);
-app.get("/user-register", JobSeeker.renderJobSeekerRegistrationPage);
-app.post("/user-register", validateRequest, JobSeeker.getJobSeekerRegistration);
-
 app.get("/recruiter-login", Recruiter.renderLoginPage);
 app.post("/recruiter-login", Recruiter.loginRecruiter);
+
+app.get("/user-register", JobSeeker.renderJobSeekerRegistrationPage);
+app.post("/user-register", validateRequest, JobSeeker.getJobSeekerRegistration);
 app.get("/user-login", JobSeeker.renderJobSeekerLoginPage);
 app.post("/user-login", JobSeeker.loginJobSeeker);
 

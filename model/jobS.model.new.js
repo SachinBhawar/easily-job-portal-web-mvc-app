@@ -1,97 +1,152 @@
-import Recruiter from "./rec.model.new.js";
+import mongoose from "mongoose";
 import nodemailer from "nodemailer";
+import { JobModel } from "./rec.model.new.js";
+
+const jobSeekerSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
+        role: { type: String, required: true },
+        password: { type: String, required: true },
+        jobsApplied: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
+        profile: {
+            name: { type: String, default: null },
+            email: { type: String, default: null },
+            phone: { type: String, default: null },
+            gender: { type: String, default: null },
+            education: { type: String, default: null },
+            experience: { type: String, default: null },
+            skills: { type: [String], default: [] },
+            resume: { type: String, default: null },
+        },
+        lastVisit: { type: Date },
+    },
+    { collection: "JobSeeker" }
+);
+
+const JobSeekerModel = mongoose.model("JobSeeker", jobSeekerSchema);
 
 export default class JobSeeker {
-  constructor(_name, _email, _password) {
-    this.role = "jobseeker";
-    this.name = _name;
-    this.email = _email;
-    this.password = _password;
-    this.jobsApplied = [];
-    this.profile = null;
-  }
-
-  static async isValidJobSeeker(jobseeker) {
-    // Check if the jobseeker email is already registered
-    return registeredJobSeeker.some((item) => item.email === jobseeker.email);
-  }
-  static async updateProfile(name, email, phone, gender, education, experience, skills, resume) {
-    let skillsArray = skills.split(",");
-    const profile = {
-      name: name,
-      email: email,
-      phone: phone,
-      gender: gender,
-      education: education,
-      experience: experience,
-      skills: skillsArray,
-      resume: resume,
-    };
-    const jobseeker = await registeredJobSeeker.find((js) => js.email == email);
-    jobseeker.profile = profile;
-  }
-
-  static async applyJob(jobId, job, jobseekerEmail) {
-    const user = await registeredJobSeeker.find((js) => js.email == jobseekerEmail);
-    await job.applicants.push(user.profile);
-    await user.jobsApplied.push(job);
-  }
-
-  static async searchJobSeekerByEmail(email) {
-    const reqJobSeeker = await registeredJobSeeker.find((js) => js.email == email);
-    if (reqJobSeeker) {
-      return reqJobSeeker;
-    } else {
-      console.log(`required jobseeker with the email ${email} not found`);
-      return null;
+    static async addJobSeeker(jobSeekerObj) {
+        const newJobSeeker = new JobSeekerModel({ ...jobSeekerObj, lastVisit: new Date() });
+        return await newJobSeeker.save();
     }
-  }
 
-  static async sendEmailNotification(service, Password, senderEmail, receiverEmail, subject) {
-    let transporter = nodemailer.createTransport({
-      service: "gmail", // Use Gmail as the email service
-      auth: {
-        user: senderEmail, // Your Gmail address
-        pass: Password, // Your Gmail password
-      },
-    });
-
-    // Define the email options
-    let mailOptions = {
-      from: senderEmail, // Sender address
-      to: receiverEmail, // Receiver address
-      subject: subject, // Subject line
-      text: "A job seeker has applied for the job.", // Plain text body
-      html: "<b>A job seeker has applied for the job.</b>", // HTML body
-    };
-
-    // Send the email
-    try {
-      let info = await transporter.sendMail(mailOptions);
-      console.log("Message sent: %s", info.messageId);
-    } catch (error) {
-      console.error("Error occurred. Message not sent:", error);
+    static async updateLastVisit(email) {
+        await JobSeekerModel.findOneAndUpdate(
+            { email },
+            { lastVisit: new Date() },
+            { new: true, upsert: true }
+        );
     }
-  }
 
-  static async addJobSeeker(obj) {
-    let jobseeker = new JobSeeker(obj.name, obj.email, obj.password);
-    registeredJobSeeker.push(jobseeker);
-    console.log("JobSeeker added", jobseeker);
-  }
+    static async isRegisteredJobSeeker(email, password) {
+        return await JobSeekerModel.findOne({ email, password });
+    }
 
-  static async isRegisteredJobSeeker(email, password) {
-    return registeredJobSeeker.find((user) => user.email === email && user.password === password);
-  }
+    static async updateProfile(jobSeekerEmail, profileData) {
+        const resumeBase64 = profileData.resume.toString("base64");
+        return await JobSeekerModel.findOneAndUpdate(
+            { email: jobSeekerEmail },
+            {
+                profile: {
+                    name: profileData.name,
+                    email: profileData.email,
+                    phone: profileData.phone,
+                    gender: profileData.gender,
+                    education: profileData.education,
+                    experience: profileData.experience,
+                    skills: profileData.skills,
+                    resume: resumeBase64,
+                },
+            },
+            { new: true }
+        );
+    }
+
+    static async applyJob(jobId, jobseekerEmail) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+
+        try {
+            const jobSeeker = await JobSeekerModel.findOne({ email: jobseekerEmail });
+            if (!jobSeeker || !jobSeeker.profile) {
+                return { result: false, message: "Profile not updated", jobsApplied: [] };
+            }
+
+            if (jobSeeker.jobsApplied.includes(jobId)) {
+                return { result: false, message: "Job already applied for", jobsApplied: [] };
+            }
+
+            jobSeeker.jobsApplied.push(jobId);
+            const user = await jobSeeker.save({ session });
+
+            const job = await JobModel.findById(jobId);
+            if (!job.applicants.includes(user._id)) {
+                job.applicants.push(user._id);
+            }
+            await job.save({ session });
+
+            await session.commitTransaction();
+            return { result: true, message: "", jobsApplied: user.jobsApplied };
+        } catch (error) {
+            console.error(error);
+            await session.abortTransaction();
+            return {
+                result: false,
+                message: "An error occurred while applying for the job",
+                jobsApplied: [],
+            };
+        } finally {
+            session.endSession();
+        }
+    }
+
+    static async searchJobSeekerByEmail(email) {
+        return await JobSeekerModel.findOne({ email });
+    }
+
+    static async sendEmailNotification(service, password, senderEmail, receiverEmail, subject) {
+        const transporter = nodemailer.createTransport({
+            service,
+            auth: {
+                user: senderEmail,
+                pass: password,
+            },
+        });
+
+        const mailOptions = {
+            from: senderEmail,
+            to: receiverEmail,
+            subject,
+            text: "A job seeker has applied for the job.",
+            html: "<b>A job seeker has applied for the job.</b>",
+        };
+
+        try {
+            const info = await transporter.sendMail(mailOptions);
+            return info.messageId;
+        } catch (error) {
+            throw new Error("Email not sent");
+        }
+    }
+
+    static async isValidJobSeeker(jobSeekerObj) {
+        return await JobSeekerModel.exists({ email: jobSeekerObj.email });
+    }
+
+    static async getAllJobs() {
+        const allJobs = await JobModel.find();
+        return allJobs;
+    }
+
+    static async getAllJobsAppliedByJobSeeker(jobSeekerEmail) {
+        const jobSeeker = await JobSeekerModel.findOne({ email: jobSeekerEmail });
+
+        if (!jobSeeker) return [];
+
+        const arrayOfJobObjectIds = jobSeeker.jobsApplied;
+        const objectIds = arrayOfJobObjectIds.map((id) => new mongoose.Types.ObjectId(id));
+        return await JobModel.find({ _id: { $in: objectIds } });
+    }
 }
-
-const registeredJobSeeker = [
-  {
-    role: "jobseeker",
-    name: "rani",
-    email: "rani@gmail.com",
-    password: "Tanu@123",
-    jobsApplied: [],
-    resume: [],
-  },
-];
