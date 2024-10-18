@@ -30,14 +30,6 @@ const recruiterSchema = new mongoose.Schema(
     { collection: "Recruiter" }
 );
 
-// Hash password before saving recruiter
-// recruiterSchema.pre("save", async function (next) {
-//     if (this.isModified("password")) {
-//         this.password = await bcrypt.hash(this.password, 10);
-//     }
-//     next();
-// });
-
 export const JobModel = mongoose.model("Job", jobSchema);
 const RecruiterModel = mongoose.model("Recruiter", recruiterSchema);
 
