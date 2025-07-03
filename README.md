@@ -18,11 +18,11 @@ Welcome to the Job Portal Web Application! This project allows both recruiters a
 
 ## Live Demo 🌐
 
-You can check out the live version of the application here: [Job Portal Live Demo]([https://easily-jobportal-new.onrender.com/])
+You can check out the live version of the application here: [Job Portal Live Demo](https://easily-jobportal-new.onrender.com/)
 
 ## Repository 📦
 
-Explore the source code on GitHub: [Job Portal GitHub Repository]([https://github.com/yourusername/job-portal](https://github.com/sachinbhawar2014/jobPortalNodeJsExpressApp/tree/MongoDB-Integration))
+Explore the source code on GitHub: [Job Portal GitHub Repository](https://github.com/SachinBhawar/easily-job-portal-web-mvc-app)
 
 ## Usage 🛠️
 
@@ -38,9 +38,6 @@ Explore the source code on GitHub: [Job Portal GitHub Repository]([https://githu
 
 Contributions are welcome! If you have suggestions for improvements or new features, feel free to fork the repository and submit a pull request.
 
-## License 📄
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments 🙏
 
