@@ -18,7 +18,7 @@ Welcome to the Job Portal Web Application! This project allows both recruiters a
 
 ## Live Demo 🌐
 
-You can check out the live version of the application here: [Job Portal Live Demo]([https://your-render-url.com](https://easily-job-portal-bmku.onrender.com))
+You can check out the live version of the application here: [Job Portal Live Demo]([https://easily-jobportal-new.onrender.com/])
 
 ## Repository 📦
 
